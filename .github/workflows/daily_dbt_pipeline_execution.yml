@@ -2,18 +2,20 @@ name: Daily dbt Pipeline Execution
 
 on:
   schedule:
-    # 02:15 UTC corresponds to 09:15 AM Vietnam Time (ICT)
+    # 19:15 UTC corresponds to 02:15 AM Vietnam Time (ICT)
     - cron: '15 19 * * *'
-  workflow_dispatch: #Manual trigger for the workflow
+  workflow_dispatch: # Manual trigger for the workflow
 
 jobs:
   run_dbt_pipeline:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: ./AI_dbt_transformation_and_create_dim_fact
+
     env:
       DBT_PROFILES_DIR: ./
-
-      # Environment variables for Snowflake connection (stored as GitHub Secrets)
       SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
       SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
       SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
@@ -33,16 +35,37 @@ jobs:
           cache: 'pip'
 
       - name: Install Dependencies
+        working-directory: ./
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          cd AI_dbt_transformation_and_create_dim_fact
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; else pip install dbt-snowflake; fi
+
+      - name: Generate profiles.yml dynamically
+        run: |
+          cat <<EOF > profiles.yml
+          AI_dbt_transformation_and_create_dim_fact:
+            target: dev
+            outputs:
+              dev:
+                type: snowflake
+                account: "${{ secrets.SNOWFLAKE_ACCOUNT }}"
+                user: "${{ secrets.SNOWFLAKE_USER }}"
+                password: "${{ secrets.SNOWFLAKE_PASSWORD }}"
+                role: "${{ secrets.SNOWFLAKE_ROLE }}"
+                database: "${{ secrets.SNOWFLAKE_DATABASE }}"
+                warehouse: "${{ secrets.SNOWFLAKE_WAREHOUSE }}"
+                schema: "${{ secrets.SNOWFLAKE_SCHEMA }}"
+                threads: 4
+          EOF
 
       - name: Install dbt Packages
         run: dbt deps
 
       - name: Run dbt Source Freshness Check
         run: dbt source freshness
+
+      - name: Run dbt Snapshots
+        run: dbt snapshot
 
       - name: Execute dbt Build (Run Models & Data Tests)
         run: dbt build
