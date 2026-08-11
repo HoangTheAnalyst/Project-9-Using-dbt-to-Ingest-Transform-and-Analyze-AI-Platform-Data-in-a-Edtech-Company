@@ -1,0 +1,100 @@
+version: 2
+
+models:
+  - name: dim_users
+    description: "Dimension table containing user profile information, latest subscription plan details, and satisfaction ratings."
+    # Model-level test: Verify 1:1 row count preservation during incremental builds
+    tests:
+      - dbt_utils.equal_rowcount:
+          arguments:
+            compare_model: ref('stg_users')
+    columns:
+      - name: user_sk
+        description: "Surrogate key generated via MD5 hash of user_id."
+        tests:
+          - not_null
+          - unique
+
+      - name: user_id
+        description: "Natural primary key of the user."
+        tests:
+          - not_null
+          - unique
+
+  - name: dim_models
+    description: "SCD Type 2 dimension table capturing AI model metadata and historical token pricing over time."
+    columns:
+      - name: model_sk
+        description: "Surrogate key uniquely identifying a specific historical version of an AI model."
+        tests:
+          - not_null
+          - unique
+
+      - name: model_id
+        description: "Natural identifier of the AI model (may repeat across SCD Type 2 history records)."
+        tests:
+          - not_null
+
+  - name: fct_messages
+    description: "Fact table recording granular AI interaction logs, token consumption, calculated API costs, and user review feedback."
+    
+    # Model-level test: Verify 1:1 row count preservation during incremental builds
+    tests:
+      - dbt_utils.equal_rowcount:
+          arguments:
+            compare_model: ref('stg_messages')
+
+    columns:
+      - name: message_id
+        description: "Primary key of the AI message interaction."
+        tests:
+          - not_null
+          - unique
+
+      - name: conversation_sk
+        description: "Foreign key referencing stg_conversations."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_conversations')
+                field: conversation_sk
+
+      - name: model_sk
+        description: "Foreign key referencing the exact historical pricing model record in dim_models."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_models')
+                field: model_sk
+
+      - name: user_sk
+        description: "Foreign key referencing dim_users."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_users')
+                field: user_sk
+
+      - name: total_cost
+        description: "Total calculated API cost (prompt_cost + completion_cost) in USD."
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+
+      - name: total_tokens
+        description: "Total token consumption (prompt_tokens + completion_tokens)."
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+
+      - name: created_at
+        description: "Timestamp when the message was created."
+        tests:
+          - not_null

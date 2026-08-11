@@ -1,0 +1,27 @@
+name: AI_dbt_transformation_and_create_dim_fact
+
+profile: AI_dbt_transformation_and_create_dim_fact
+
+seed-paths: ["seeds"]
+model-paths: ["models"]
+macro-paths: ["macros"]
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+
+models:
+  AI_dbt_transformation_and_create_dim_fact:
+    +static_analysis: strict
+    # Materialize staging models as views, and marts as tables
+    staging:
+      +materialized: view
+      +schema: 'staging'
+    marts:
+      +materialized: table
+      +schema: 'marts'
+
+tests:
+  +store_failures: true
+  +schema: 'tests'
+

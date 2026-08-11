@@ -1,0 +1,13 @@
+version: 2
+
+snapshots:
+  - name: stg_models_snapshot
+    relation: ref('stg_models')
+    description: "Tracks slowly changing dimensions (SCD Type 2) for AI models, preserving point-in-time historical changes in pricing (prompt and completion rates) and operational status to enable accurate historical cost reporting."
+    config:
+      target_database: AI_Platform_Database
+      target_schema: snapshots
+      unique_key: id
+      strategy: timestamp
+      updated_at: updated_at
+      hard_deletes: invalidate

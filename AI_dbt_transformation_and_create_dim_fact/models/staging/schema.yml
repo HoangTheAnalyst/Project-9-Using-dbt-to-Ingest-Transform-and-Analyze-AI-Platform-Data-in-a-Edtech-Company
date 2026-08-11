@@ -1,0 +1,229 @@
+version: 2
+
+models:
+  - name: stg_users
+    description: "Staging model for user subscription data. Deduplicated to capture the latest subscription plan per user with fallback handling."
+    columns:
+      - name: user_id
+        description: "Natural key of the user (includes 'unknown_user')."
+        tests:
+          - not_null
+          - unique
+
+      - name: user_sk
+        description: "MD5 surrogate key derived from user_id."
+        tests:
+          - not_null
+          - unique
+
+      - name: start_of_newest_plan
+        description: "Start timestamp of the user's latest active subscription plan."
+        tests:
+          - not_null
+
+      - name: end_of_newest_plan
+        description: "Expiration timestamp of the user's latest active subscription plan (NULL indicates ongoing subscription)."
+
+      - name: newest_plan_id
+        description: "Identifier of the latest subscription plan assigned to the user."
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['plan_free', 'plan_basic', 'plan_ultra', 'unknown_plan']
+          - relationships:
+              arguments:
+                to: ref('stg_plans')
+                field: id
+
+  - name: stg_plans
+    description: "Master reference list of supported subscription plans."
+    columns:
+      - name: id
+        description: "Primary identifier of the plan."
+        tests:
+          - not_null
+          - unique
+          - accepted_values:
+              arguments:
+                values: ['plan_free', 'plan_basic', 'plan_ultra', 'unknown_plan']
+
+      - name: plan_type
+        description: "Human-readable classification of the plan."
+        tests:  
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Free', 'Basic', 'Ultra', 'unknown_plan_type']
+
+  - name: stg_models
+    description: "Staging table for AI model metadata and token pricing rates."
+    columns:
+      - name: id
+        description: "Natural primary key of the AI model."
+        tests:
+          - not_null
+          - unique
+
+      - name: model_sk
+        description: "Deterministic MD5 surrogate key constructed from model id and updated_at timestamp."
+        tests:
+          - not_null
+          - unique
+
+      - name: provider
+        description: "Provider or vendor hosting the AI model."
+        tests:
+          - not_null
+
+      - name: prompt_price_per_1k
+        description: "Cost in USD per 1,000 prompt/input tokens."
+        tests:
+          - not_null
+
+      - name: completion_price_per_1k
+        description: "Cost in USD per 1,000 completion/output tokens."
+        tests:
+          - not_null
+
+      - name: is_active
+        description: "Boolean status indicating whether the model is active."
+        tests:
+          - not_null
+
+      - name: updated_at
+        description: "Timestamp when the model configuration or pricing was last updated."
+        tests:
+          - not_null
+
+  - name: stg_conversations
+    description: "Staging model for user chat conversation metadata."
+    columns:
+      - name: id
+        description: "Natural primary key of the conversation."
+        tests:
+          - not_null
+          - unique
+
+      - name: conversation_sk
+        description: "MD5 surrogate key derived from conversation id."
+        tests:
+          - not_null
+          - unique
+
+      - name: user_sk
+        description: "Foreign key referencing stg_users."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_users')
+                field: user_sk
+
+      - name: created_at
+        description: "Timestamp when the conversation was initiated."
+        tests:
+          - not_null
+
+  - name: stg_messages
+    description: "Staging model for granular AI interaction messages and token usage counts."
+    columns:
+      - name: id
+        description: "Primary identifier of the interaction message."
+        tests:
+          - not_null
+          - unique
+
+      - name: conversation_sk
+        description: "Foreign key referencing stg_conversations."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_conversations')
+                field: conversation_sk
+
+      - name: created_at
+        description: "Timestamp when the message event occurred."
+        tests:
+          - not_null
+
+      - name: model_id
+        description: "Foreign key referencing stg_models."
+        tests: 
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_models')
+                field: id
+
+      - name: prompt_tokens
+        description: "Count of prompt tokens consumed."
+        tests:
+          - not_null
+
+      - name: completion_tokens
+        description: "Count of completion tokens generated."
+        tests:
+          - not_null
+
+      - name: is_error
+        description: "Boolean flag indicating if the message generation failed."
+        tests:
+          - not_null
+
+  - name: stg_app_reviews
+    description: "Staging model for application-level user ratings, deduplicated to 1 record per user."
+    columns:
+      - name: user_sk
+        description: "Foreign key referencing stg_users."
+        tests:
+          - not_null
+          - unique
+          - relationships:
+              arguments:
+                to: ref('stg_users')
+                field: user_sk
+
+      - name: latest_rating
+        description: "Latest 1 to 5 star rating provided by the user."
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5]
+
+  - name: stg_message_reviews
+    description: "Staging model for individual message ratings, deduplicated to 1 latest review per message."
+    columns:
+      - name: id
+        description: "Primary key of the message review."
+        tests:
+          - not_null
+          - unique
+
+      - name: message_id
+        description: "Foreign key referencing stg_messages."
+        tests:
+          - not_null
+          - unique
+          - relationships:
+              arguments:
+                to: ref('stg_messages')
+                field: id
+
+      - name: rating
+        description: "Type of review feedback submitted."
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['like', 'dislike', '1_star', '5_star']
+
+      - name: review_category
+        description: "Categorical feedback area."
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Speed', 'Relevance', 'Formatting', 'Accuracy']

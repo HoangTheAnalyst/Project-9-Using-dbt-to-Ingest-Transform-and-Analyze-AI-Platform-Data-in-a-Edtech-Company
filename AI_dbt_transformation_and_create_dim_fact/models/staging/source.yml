@@ -1,0 +1,112 @@
+version: 2
+
+sources:
+  - name: source_data
+    schema: raw
+    database: AI_Platform_Database
+    description: "This is the source data for the AI platform."
+    config:
+      loaded_at_field: _airbyte_extracted_at
+      freshness:
+        warn_after: {count: 24, period: hour}
+        error_after: {count: 48, period: hour}
+
+    tables:
+      - name: raw_users
+        description: "This table contains users information."
+        columns:
+          - name: id
+            tests:
+              - not_null
+              - unique
+
+      - name: raw_plans
+        description: "This table contains plans information (Free, Basic, Ultra)."
+        columns:
+          - name: id
+            tests:
+              - not_null
+              - unique
+              - accepted_values:
+                  arguments:
+                    values: ['plan_free', 'plan_basic', 'plan_ultra']
+
+      - name: raw_user_subscriptions
+        description: "This table contains user subscription information."
+        columns:
+          - name: id
+            tests:
+              - not_null
+              - unique
+
+      - name: raw_models
+        description: "This table contains models information."
+        columns:
+          - name: id
+            tests:
+              - not_null
+              - unique
+
+      - name: raw_conversations
+        description: "This table contains conversations information."
+        columns:
+          - name: id
+            tests:
+              - not_null:
+                  config:
+                    severity: error
+                    warn_if: ">= 1"
+                    error_if: ">= 25"
+              - unique:
+                  config:
+                    severity: error
+                    warn_if: ">= 1"
+                    error_if: ">= 25"
+
+      - name: raw_messages
+        description: "This table contains messages information."
+        columns:
+          - name: id
+            tests:
+              - not_null:
+                  config:
+                    severity: error
+                    warn_if: ">= 10"
+                    error_if: ">= 100"
+              - unique:
+                  config:
+                    severity: error
+                    warn_if: ">= 10"
+                    error_if: ">= 100"
+
+      - name: raw_app_reviews
+        description: "This table contains app reviews information."
+        columns:
+          - name: id
+            tests:
+              - not_null:
+                  config:
+                    severity: error
+                    warn_if: ">= 1"
+                    error_if: ">= 100"
+              - unique:
+                  config:
+                    severity: error
+                    warn_if: ">= 1"
+                    error_if: ">= 100"
+
+      - name: raw_message_reviews
+        description: "This table contains message reviews information."
+        columns:
+          - name: id
+            tests:
+              - not_null:
+                  config:
+                    severity: error
+                    warn_if: ">= 1"
+                    error_if: ">= 100"
+              - unique:
+                  config:
+                    severity: error
+                    warn_if: ">= 1"
+                    error_if: ">= 100"
