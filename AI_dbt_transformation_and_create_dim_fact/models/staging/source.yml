@@ -14,6 +14,11 @@ sources:
     tables:
       - name: raw_users
         description: "This table contains users information."
+        config:
+          freshness: 
+            warn_after: {count: 96, period: hour}
+            error_after: {count: 192, period: hour}
+          loaded_at_field: _airbyte_extracted_at
         columns:
           - name: id
             tests:
@@ -22,6 +27,8 @@ sources:
 
       - name: raw_plans
         description: "This table contains plans information (Free, Basic, Ultra)."
+        config:
+          freshness: null
         columns:
           - name: id
             tests:
@@ -41,6 +48,8 @@ sources:
 
       - name: raw_models
         description: "This table contains models information."
+        config:
+          freshness: null
         columns:
           - name: id
             tests:
@@ -81,6 +90,11 @@ sources:
 
       - name: raw_app_reviews
         description: "This table contains app reviews information."
+        config:
+          freshness:
+            warn_after: {count: 96, period: hour}
+            error_after: {count: 192, period: hour}
+          loaded_at_field: _airbyte_extracted_at
         columns:
           - name: id
             tests:
@@ -97,6 +111,11 @@ sources:
 
       - name: raw_message_reviews
         description: "This table contains message reviews information."
+        config:
+          freshness:
+            warn_after: {count: 96, period: hour}
+            error_after: {count: 192, period: hour}
+          loaded_at_field: _airbyte_extracted_at
         columns:
           - name: id
             tests:
