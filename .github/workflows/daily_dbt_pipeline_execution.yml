@@ -42,7 +42,8 @@ jobs:
 
       - name: Generate profiles.yml dynamically
         run: |
-          cat <<EOF > profiles.yml
+          mkdir -p ~/.dbt
+          cat <<EOF > ~/.dbt/profiles.yml
           AI_dbt_transformation_and_create_dim_fact:
             target: dev
             outputs:
