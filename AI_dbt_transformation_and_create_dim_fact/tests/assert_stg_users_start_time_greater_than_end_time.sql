@@ -1,5 +1,5 @@
 {{config(
-    warn_if = '>= 0',
+    warn_if = '>= 1',
     error_if = '>= 5'
 )
 }}
