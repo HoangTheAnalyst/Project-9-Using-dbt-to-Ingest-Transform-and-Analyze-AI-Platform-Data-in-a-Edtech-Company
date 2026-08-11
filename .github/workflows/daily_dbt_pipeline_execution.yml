@@ -64,8 +64,5 @@ jobs:
       - name: Run dbt Source Freshness Check
         run: dbt source freshness
 
-      - name: Run dbt Snapshots
-        run: dbt snapshot
-
       - name: Execute dbt Build (Run Models & Data Tests)
         run: dbt build
