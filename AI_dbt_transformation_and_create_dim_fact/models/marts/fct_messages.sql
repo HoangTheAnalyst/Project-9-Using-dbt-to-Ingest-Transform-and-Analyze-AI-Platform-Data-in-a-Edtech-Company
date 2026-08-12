@@ -29,6 +29,23 @@ WITH dim_models AS (
     FROM {{ ref('dim_models') }}
 ),
 
+dim_date AS (
+    SELECT
+        date_key,
+        date_day,
+        day_of_month,
+        day_of_week_name_short,
+        week_of_year,
+        week_start_date,
+        month_of_year,
+        month_name_short,
+        month_start_date,
+        month_end_date,
+        quarter_of_year,
+        year_number
+    FROM {{ ref('dim_date') }}
+),
+
 stg_messages AS (
     SELECT
         id,
@@ -114,6 +131,8 @@ dim_messages AS (
        AND messages.created_at < models.dbt_valid_to
     LEFT JOIN stg_message_reviews AS message_reviews
         ON message_reviews.message_id = messages.id
+    LEFT JOIN dim_date AS date 
+        ON date.date_key = TO_NUMBER(TO_CHAR(messages.created_at, 'YYYYMMDD'))
 )
 
 SELECT * FROM dim_messages

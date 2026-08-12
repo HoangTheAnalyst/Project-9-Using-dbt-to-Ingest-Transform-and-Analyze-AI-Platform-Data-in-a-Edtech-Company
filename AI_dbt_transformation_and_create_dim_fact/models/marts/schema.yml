@@ -77,6 +77,14 @@ models:
               arguments:
                 to: ref('dim_users')
                 field: user_sk
+      - name: date_key
+        description: "Foreign key referencing dim_date for time-based analysis."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
 
       - name: total_cost
         description: "Total calculated API cost (prompt_cost + completion_cost) in USD."
@@ -98,3 +106,13 @@ models:
         description: "Timestamp when the message was created."
         tests:
           - not_null
+  
+  - name: dim_date
+    description: "Dimension table for date attributes, supporting time-based analysis of AI interactions."
+    columns:
+      - name: date_key
+        description: "Surrogate key in YYYYMMDD format."
+        tests:
+          - not_null
+          - unique
+      

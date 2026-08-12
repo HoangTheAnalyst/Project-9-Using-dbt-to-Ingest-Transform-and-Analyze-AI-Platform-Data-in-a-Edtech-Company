@@ -1,0 +1,14 @@
+==================== 2026-08-12T02:50:40.341787Z | 019ff3e1-0d40-79e1-8fc6-e4884a97ad95 ====================
+02:50:40.344246 [warn ]: [DocsGenerateWarning (dbt1705)]: `dbt docs generate` is not supported. Use `dbt compile --write-catalog` to write catalog.json. To host docs locally, use the dbt Core index.html with catalog.json and manifest.json in the same directory: https://github.com/dbt-labs/dbt-core/blob/main/core/dbt/task/docs/index.html
+02:50:40.796120 [info ]: 
+==================== Execution Summary =====================
+Finished 'docs' with 1 warning [454ms]
+==================== 2026-08-12T02:50:53.384310Z | 019ff3e1-4046-75b3-84e1-84117090267a ====================
+02:50:53.385617 [error]: [Generic (dbt1000)]: dbt docs serve: no data to serve
+
+Index directory not found: ./target/index
+Run `dbt --write-index <run|build|compile>` to generate parquet artifacts,
+or pass `--target-path <DIR>` pointing at a directory whose `index/` subdirectory contains them.
+02:50:53.828933 [info ]: 
+==================== Execution Summary =====================
+Finished 'docs' with 1 error [444ms]

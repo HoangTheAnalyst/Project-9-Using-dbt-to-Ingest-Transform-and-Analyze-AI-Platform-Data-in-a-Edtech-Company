@@ -4,6 +4,7 @@
 ) }}
 
 SELECT
+    TO_NUMBER(TO_CHAR(date_day, 'YYYYMMDD')) AS date_key,  -- Primary Key (20260811)
     date_day,                -- Primary Key (2026-08-11)
     day_of_month,            -- 11
     day_of_week_name_short,  -- Tue  
