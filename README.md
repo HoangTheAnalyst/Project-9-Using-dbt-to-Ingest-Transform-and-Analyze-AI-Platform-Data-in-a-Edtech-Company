@@ -1,8 +1,9 @@
-# Project: End-to-End AI Platform Data Engineering & Analytics with Snowflake, dbt & Airbyte
+# Project: End-to-End AI Platform Pipeline Analytics Engineer with Snowflake, dbt & Airbyte
 
 ## 1. Executive Summary & Overview
 
-* **Business Scenario**: An EdTech company is deploying an AI-powered learning assistant designed to enhance student engagement for Grade 12 learners. To ensure continuous operational monitoring, optimize LLM API expenditure, and analyze user retention, the platform requires a robust, scalable data infrastructure. As the platform approaches production readiness, an automated, self-testing, and resilient pipeline is critical to detect edge-case anomalies and prevent data quality degradation from impacting downstream analytics.
+* **Business Scenario**: An EdTech company is deploying an AI-powered learning assistant designed to enhance student engagement for Grade 12 learners. To ensure continuous operational monitoring, optimize LLM API expenditure, and analyze user retention, the platform requires a robust, scalable data infrastructure. 
+> As the platform approaches production readiness, an automated, self-testing, and resilient pipeline is critical to detect edge-case anomalies and prevent data quality degradation from impacting downstream analytics.
 * **Core Objectives**: Deliver an end-to-end production-grade data pipeline ready for Business Intelligence (BI) tools:
   1. **Automated Ingestion**: Ingest transactional data seamlessly from Neon DB to Snowflake via Airbyte.
   2. **Medallion Modeling & Testing**: Execute a multi-layered data transformation strategy (Raw -> Staging -> Marts) using dbt, embedded with rigorous testing suites for edge cases, null handling, and business logic validations.
@@ -73,3 +74,8 @@
   2. **Dynamic Profile Injection**: Generates `profiles.yml` securely at runtime using GitHub Actions Secrets.
   3. **Freshness & Integrity Checks**: Executes `dbt source freshness` to detect upstream pipeline delays.
   4. **Build & Test Execution**: Triggers `dbt build` to perform transformations and execute all data quality assertions in a single atomic pass.
+
+
+## 7. Local Setup & Deployment Guide
+
+To watch detail configurations, please click on [Deployment Guide](docs/deployment_guide.md)
