@@ -29,7 +29,7 @@ Before running dbt transformations, populate the raw landing zone in Snowflake v
 
 ```bash
 # Clone the dbt project repository
-git clone <your-dbt-project-repo-url>
+git clone https://github.com/HoangTheAnalyst/Project-9-Using-dbt-to-Ingest-Transform-and-Analyze-AI-Platform-Data-in-a-Edtech-Company.git
 
 # Initialize virtual environment
 python -m venv venv
