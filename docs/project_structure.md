@@ -1,5 +1,6 @@
 # Project Structure
 
+```text
 Project-9-Using-dbt-to-Ingest-Transform-and-Analyze-AI-Platform-Data-in-a-Edtech-Company/
 ├── .github/
 │   └── workflows/
@@ -42,3 +43,4 @@ Project-9-Using-dbt-to-Ingest-Transform-and-Analyze-AI-Platform-Data-in-a-Edtech
 ├── .gitignore
 ├── README.md                                 # Comprehensive project case study & documentation
 └── requirements.txt                          # Python dependencies
+```
