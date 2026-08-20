@@ -74,7 +74,11 @@
   3. **Freshness & Integrity Checks**: Executes `dbt source freshness` to detect upstream pipeline delays.
   4. **Build & Test Execution**: Triggers `dbt build` to perform transformations and execute all data quality assertions in a single atomic pass.
 
+## 7. Technical Documentation & Key Resources
 
-## 7. Local Setup & Deployment Guide
+For in-depth technical implementation details, architectural trade-offs, and governance specifications, explore the dedicated documentation guides:
 
-To watch detail configurations, please click on [Deployment Guide](docs/deployment_guide.md)
+* 🏛️ **[Architecture Decision Records (ADRs)](https://github.com/HoangTheAnalyst/Project-9-Using-dbt-to-Ingest-Transform-and-Analyze-AI-Platform-Data-in-a-Edtech-Company/blob/master/docs/architecture_decisions.md):** Detailed breakdown of technical trade-offs, Medallion layer boundaries (`RAW` → `STAGING` → `MARTS`), SCD Type 2 snapshot strategies, and sync frequency choices.
+* 📖 **[Data Dictionary](https://github.com/HoangTheAnalyst/Project-9-Using-dbt-to-Ingest-Transform-and-Analyze-AI-Platform-Data-in-a-Edtech-Company/blob/master/docs/data_dictionary.md):** Full column-level definitions, surrogate key formulas, business logic rules, and dbt test constraints across `staging` and dimensional star-schema `marts` (`dim_*`, `fct_*`).
+* 🚀 **[Deployment Guide](https://github.com/HoangTheAnalyst/Project-9-Using-dbt-to-Ingest-Transform-and-Analyze-AI-Platform-Data-in-a-Edtech-Company/blob/master/docs/deployment_guide.md):** Step-by-step setup for Airbyte replication connectors, Snowflake Role-Based Access Control (RBAC) provisioning (`DBT_ROLE` vs. `ANALYST_ROLE`), and scheduled GitHub Actions CI/CD workflows.
+* 🧩 **[Project Structure](https://github.com/HoangTheAnalyst/Project-9-Using-dbt-to-Ingest-Transform-and-Analyze-AI-Platform-Data-in-a-Edtech-Company/blob/master/docs/project_structure.md):** Overview of the project's directory layout and file organization.
